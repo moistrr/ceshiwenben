@@ -2,7 +2,7 @@
 import { connect } from 'cloudflare:sockets';
 
 let userID = '';
-let proxyIP = '';
+let fandaiIP = '';
 let sub = '';
 let subconverter = 'SUBAPI.fxxk.dedyn.io';
 let subconfig = "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Mini_MultiMode.ini";
@@ -52,8 +52,8 @@ export default {
 				更新时间 = env.UPTIME || 更新时间;
 				const userIDs = await 生成动态UUID(env.KEY);
 				userID = userIDs[0];
-			} else if (env.UUID) {
-				userID = env.UUID;
+			} else if (env.idid) {
+				userID = env.idid;
 			}
 			
 			if (!userID) {
@@ -78,9 +78,9 @@ export default {
 			
 			fakeHostName = `${fakeUserIDMD5.slice(6, 9)}.${fakeUserIDMD5.slice(13, 19)}`;
 
-			proxyIP = env.PROXYIP || proxyIP;
-			proxyIPs = await 整理(proxyIP);
-			proxyIP = proxyIPs[Math.floor(Math.random() * proxyIPs.length)];
+			fandaiIP = env.fandaiIP || fandaiIP;
+			proxyIPs = await 整理(fandaiIP);
+			fandaiIP = proxyIPs[Math.floor(Math.random() * proxyIPs.length)];
 
 			socks5Address = env.SOCKS5 || socks5Address;
 			socks5s = await 整理(socks5Address);
@@ -104,14 +104,14 @@ export default {
 				} catch (err) {
 					let e = err;
 					console.log(e.toString());
-					RproxyIP = env.RPROXYIP || !proxyIP ? 'true' : 'false';
+					RproxyIP = env.RPROXYIP || !fandaiIP ? 'true' : 'false';
 					enableSocks = false;
 				}
 			} else {
-				RproxyIP = env.RPROXYIP || !proxyIP ? 'true' : 'false';
+				RproxyIP = env.RPROXYIP || !fandaiIP ? 'true' : 'false';
 			}
 			if (env.ADD) addresses = await 整理(env.ADD);
-			if (env.ADDAPI) addressesapi = await 整理(env.ADDAPI);
+			if (env.jiedianIP) addressesapi = await 整理(env.jiedianIP);
 			if (env.ADDNOTLS) addressesnotls = await 整理(env.ADDNOTLS);
 			if (env.ADDNOTLSAPI) addressesnotlsapi = await 整理(env.ADDNOTLSAPI);
 			if (env.ADDCSV) addressescsv = await 整理(env.ADDCSV);
@@ -176,9 +176,9 @@ export default {
 					else return new Response(``, { status: 404 });
 				}
 			} else {
-				proxyIP = url.searchParams.get('proxyip') || proxyIP;
-				if (new RegExp('/proxyip=', 'i').test(url.pathname)) proxyIP = url.pathname.toLowerCase().split('/proxyip=')[1];
-				else if (new RegExp('/proxyip.', 'i').test(url.pathname)) proxyIP = `proxyip.${url.pathname.toLowerCase().split("/proxyip.")[1]}`;
+				fandaiIP = url.searchParams.get('fandaiIP') || fandaiIP;
+				if (new RegExp('/fandaiIP=', 'i').test(url.pathname)) fandaiIP = url.pathname.toLowerCase().split('/fandaiIP=')[1];
+				else if (new RegExp('/fandaiIP.', 'i').test(url.pathname)) fandaiIP = `fandaiIP.${url.pathname.toLowerCase().split("/fandaiIP.")[1]}`;
 				
 				socks5Address = url.searchParams.get('socks5') || socks5Address;
 				if (new RegExp('/socks5=', 'i').test(url.pathname)) socks5Address = url.pathname.split('5=')[1];
@@ -353,17 +353,17 @@ async function handleTCPOutBound(remoteSocket, addressType, addressRemote, portR
 			tcpSocket = await connectAndWrite(addressRemote, portRemote, true);
 		} else {
 			// 否则，尝试使用预设的代理 IP（如果有）或原始地址重试连接
-			if (!proxyIP || proxyIP == '') {
-				proxyIP = atob(`UFJPWFlJUC50cDEuZnh4ay5kZWR5bi5pbw==`);
-			} else if (proxyIP.includes(']:')) {
-				portRemote = proxyIP.split(']:')[1] || portRemote;
-				proxyIP = proxyIP.split(']:')[0] || proxyIP;
-			} else if (proxyIP.split(':').length === 2) {
-				portRemote = proxyIP.split(':')[1] || portRemote;
-				proxyIP = proxyIP.split(':')[0] || proxyIP;
+			if (!fandaiIP || fandaiIP == '') {
+				fandaiIP = atob(`UFJPWFlJUC50cDEuZnh4ay5kZWR5bi5pbw==`);
+			} else if (fandaiIP.includes(']:')) {
+				portRemote = fandaiIP.split(']:')[1] || portRemote;
+				fandaiIP = fandaiIP.split(']:')[0] || fandaiIP;
+			} else if (fandaiIP.split(':').length === 2) {
+				portRemote = fandaiIP.split(':')[1] || portRemote;
+				fandaiIP = fandaiIP.split(':')[0] || fandaiIP;
 			}
-			if (proxyIP.includes('.tp')) portRemote = proxyIP.split('.tp')[1].split('.')[0] || portRemote;
-			tcpSocket = await connectAndWrite(proxyIP || addressRemote, portRemote);
+			if (fandaiIP.includes('.tp')) portRemote = fandaiIP.split('.tp')[1].split('.')[0] || portRemote;
+			tcpSocket = await connectAndWrite(fandaiIP || addressRemote, portRemote);
 		}
 		// 无论重试是否成功，都要关闭 WebSocket（可能是为了重新建立连接）
 		tcpSocket.closed.catch(error => {
@@ -726,16 +726,16 @@ function base64ToArrayBuffer(base64Str) {
 }
 
 /**
- * 这不是真正的 UUID 验证，而是一个简化的版本
- * @param {string} uuid 要验证的 UUID 字符串
- * @returns {boolean} 如果字符串匹配 UUID 格式则返回 true，否则返回 false
+ * 这不是真正的 idid 验证，而是一个简化的版本
+ * @param {string} idid 要验证的 idid 字符串
+ * @returns {boolean} 如果字符串匹配 idid 格式则返回 true，否则返回 false
  */
-function isValidUUID(uuid) {
-	// 定义一个正则表达式来匹配 UUID 格式
+function isValidUUID(idid) {
+	// 定义一个正则表达式来匹配 idid 格式
 	const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[4][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 	
-	// 使用正则表达式测试 UUID 字符串
-	return uuidRegex.test(uuid);
+	// 使用正则表达式测试 idid 字符串
+	return uuidRegex.test(idid);
 }
 
 // WebSocket 的两个重要状态常量
@@ -764,16 +764,16 @@ for (let i = 0; i < 256; ++i) {
 }
 
 /**
- * 快速地将字节数组转换为 UUID 字符串，不进行有效性检查
+ * 快速地将字节数组转换为 idid 字符串，不进行有效性检查
  * 这是一个底层函数，直接操作字节，不做任何验证
- * @param {Uint8Array} arr 包含 UUID 字节的数组
- * @param {number} offset 数组中 UUID 开始的位置，默认为 0
- * @returns {string} UUID 字符串
+ * @param {Uint8Array} arr 包含 idid 字节的数组
+ * @param {number} offset 数组中 idid 开始的位置，默认为 0
+ * @returns {string} idid 字符串
  */
 function unsafeStringify(arr, offset = 0) {
-	// 直接从查找表中获取每个字节的十六进制表示，并拼接成 UUID 格式
+	// 直接从查找表中获取每个字节的十六进制表示，并拼接成 idid 格式
 	// 8-4-4-4-12 的分组是通过精心放置的连字符 "-" 实现的
-	// toLowerCase() 确保整个 UUID 是小写的
+	// toLowerCase() 确保整个 idid 是小写的
 	return (byteToHex[arr[offset + 0]] + byteToHex[arr[offset + 1]] + byteToHex[arr[offset + 2]] + byteToHex[arr[offset + 3]] + "-" +
 		byteToHex[arr[offset + 4]] + byteToHex[arr[offset + 5]] + "-" +
 		byteToHex[arr[offset + 6]] + byteToHex[arr[offset + 7]] + "-" +
@@ -783,23 +783,23 @@ function unsafeStringify(arr, offset = 0) {
 }
 
 /**
- * 将字节数组转换为 UUID 字符串，并验证其有效性
- * 这是一个安全的函数，它确保返回的 UUID 格式正确
- * @param {Uint8Array} arr 包含 UUID 字节的数组
- * @param {number} offset 数组中 UUID 开始的位置，默认为 0
- * @returns {string} 有效的 UUID 字符串
- * @throws {TypeError} 如果生成的 UUID 字符串无效
+ * 将字节数组转换为 idid 字符串，并验证其有效性
+ * 这是一个安全的函数，它确保返回的 idid 格式正确
+ * @param {Uint8Array} arr 包含 idid 字节的数组
+ * @param {number} offset 数组中 idid 开始的位置，默认为 0
+ * @returns {string} 有效的 idid 字符串
+ * @throws {TypeError} 如果生成的 idid 字符串无效
  */
 function stringify(arr, offset = 0) {
-	// 使用不安全的函数快速生成 UUID 字符串
-	const uuid = unsafeStringify(arr, offset);
-	// 验证生成的 UUID 是否有效
-	if (!isValidUUID(uuid)) {
-		// 原：throw TypeError("Stringified UUID is invalid");
-		throw TypeError(`生成的 UUID 不符合规范 ${uuid}`); 
-		//uuid = userID;
+	// 使用不安全的函数快速生成 idid 字符串
+	const idid = unsafeStringify(arr, offset);
+	// 验证生成的 idid 是否有效
+	if (!isValidUUID(idid)) {
+		// 原：throw TypeError("Stringified idid is invalid");
+		throw TypeError(`生成的 idid 不符合规范 ${idid}`); 
+		//idid = userID;
 	}
-	return uuid;
+	return idid;
 }
 
 /**
@@ -1139,14 +1139,14 @@ async function 代理URL(代理网址, 目标网址) {
 }
 
 const 啥啥啥_写的这是啥啊 = atob('ZG14bGMzTT0=');
-function 配置信息(UUID, 域名地址) {
+function 配置信息(idid, 域名地址) {
 	const 协议类型 = atob(啥啥啥_写的这是啥啊);
 	
 	const 别名 = FileName;
 	let 地址 = 域名地址;
 	let 端口 = 443;
 
-	const 用户ID = UUID;
+	const 用户ID = idid;
 	const 加密方式 = 'none';
 	
 	const 传输层协议 = 'ws';
@@ -1168,7 +1168,7 @@ function 配置信息(UUID, 域名地址) {
   name: ${FileName}
   server: ${地址}
   port: ${端口}
-  uuid: ${用户ID}
+  idid: ${用户ID}
   network: ${传输层协议}
   tls: ${传输层安全[1]}
   udp: false
@@ -1235,7 +1235,7 @@ async function 生成配置信息(userID, hostName, sub, UA, RproxyIP, _url, env
 			addresses = addresses.concat(cfips.map(cidr => generateRandomIPFromCIDR(cidr) + '#CF随机节点'));
 		}
 	}
-	const uuid = (_url.pathname == `/${env.KEY}`) ? env.KEY : userID;
+	const idid = (_url.pathname == `/${env.KEY}`) ? env.KEY : userID;
 	const userAgent = UA.toLowerCase();
 	const Config = 配置信息(userID , hostName);
 	const v2ray = Config[0];
@@ -1281,49 +1281,49 @@ async function 生成配置信息(userID, hostName, sub, UA, RproxyIP, _url, env
 		let 订阅器 = '\n';
 		if (sub) {
 			if (enableSocks) 订阅器 += `CFCDN（访问方式）: Socks5\n  ${newSocks5s.join('\n  ')}\n${socks5List}`;
-			else if (proxyIP && proxyIP != '') 订阅器 += `CFCDN（访问方式）: ProxyIP\n  ${proxyIPs.join('\n  ')}\n`;
-			else 订阅器 += `CFCDN（访问方式）: 无法访问, 需要您设置 proxyIP/PROXYIP ！！！\n`;
+			else if (fandaiIP && fandaiIP != '') 订阅器 += `CFCDN（访问方式）: fandaiIP\n  ${proxyIPs.join('\n  ')}\n`;
+			else 订阅器 += `CFCDN（访问方式）: 无法访问, 需要您设置 fandaiIP/fandaiIP ！！！\n`;
 			订阅器 += `\n您的订阅内容由 内置 addresses/ADD* 参数变量提供\n`;
 			if (addresses.length > 0) 订阅器 += `ADD（TLS优选域名&IP）: \n  ${addresses.join('\n  ')}\n`;
 			if (addressesnotls.length > 0) 订阅器 += `ADDNOTLS（noTLS优选域名&IP）: \n  ${addressesnotls.join('\n  ')}\n`;
-			if (addressesapi.length > 0) 订阅器 += `ADDAPI（TLS优选域名&IP 的 API）: \n  ${addressesapi.join('\n  ')}\n`;
+			if (addressesapi.length > 0) 订阅器 += `jiedianIP（TLS优选域名&IP 的 API）: \n  ${addressesapi.join('\n  ')}\n`;
 			if (addressesnotlsapi.length > 0) 订阅器 += `ADDNOTLSAPI（noTLS优选域名&IP 的 API）: \n  ${addressesnotlsapi.join('\n  ')}\n`;
 			if (addressescsv.length > 0) 订阅器 += `ADDCSV（IPTest测速csv文件 限速 ${DLS} ）: \n  ${addressescsv.join('\n  ')}\n`;
 		} else {
 			if (enableSocks) 订阅器 += `CFCDN（访问方式）: Socks5\n  ${newSocks5s.join('\n  ')}\n${socks5List}`;
-			else if (proxyIP && proxyIP != '') 订阅器 += `CFCDN（访问方式）: ProxyIP\n  ${proxyIPs.join('\n  ')}\n`;
+			else if (fandaiIP && fandaiIP != '') 订阅器 += `CFCDN（访问方式）: fandaiIP\n  ${proxyIPs.join('\n  ')}\n`;
 			else if (RproxyIP == 'true') 订阅器 += `CFCDN（访问方式）: 自动获取ProxyIP\n`;
-			else 订阅器 += `CFCDN（访问方式）: 无法访问, 需要您设置 proxyIP/PROXYIP ！！！\n`
+			else 订阅器 += `CFCDN（访问方式）: 无法访问, 需要您设置 fandaiIP/fandaiIP ！！！\n`
 			订阅器 += `\nSUB（优选订阅生成器）: ${sub}`;
 		}
 
 		if (env.KEY && _url.pathname !== `/${env.KEY}`) 订阅器 = '';
 		else 订阅器 += `\nSUBAPI（订阅转换后端）: ${subProtocol}://${subconverter}\nSUBCONFIG（订阅转换配置文件）: ${subconfig}`;
-		const 动态UUID = (uuid != userID) ? `TOKEN: ${uuid}\nUUIDNow: ${userID}\nUUIDLow: ${userIDLow}\n${userIDTime}TIME（动态UUID有效时间）: ${有效时间} 天\nUPTIME（动态UUID更新时间）: ${更新时间} 时（北京时间）\n\n` : `${userIDTime}`;
+		const 动态UUID = (idid != userID) ? `TOKEN: ${idid}\nUUIDNow: ${userID}\nUUIDLow: ${userIDLow}\n${userIDTime}TIME（动态UUID有效时间）: ${有效时间} 天\nUPTIME（动态UUID更新时间）: ${更新时间} 时（北京时间）\n\n` : `${userIDTime}`;
 		return `
 ################################################################
 Subscribe / sub 订阅地址, 支持 Base64、clash-meta、sing-box 订阅格式
 ---------------------------------------------------------------
 快速自适应订阅地址:
-https://${proxyhost}${hostName}/${uuid}
-https://${proxyhost}${hostName}/${uuid}?sub
+https://${proxyhost}${hostName}/${idid}
+https://${proxyhost}${hostName}/${idid}?sub
 
 Base64订阅地址:
-https://${proxyhost}${hostName}/${uuid}?b64
-https://${proxyhost}${hostName}/${uuid}?base64
+https://${proxyhost}${hostName}/${idid}?b64
+https://${proxyhost}${hostName}/${idid}?base64
 
 clash订阅地址:
-https://${proxyhost}${hostName}/${uuid}?clash
+https://${proxyhost}${hostName}/${idid}?clash
 
 singbox订阅地址:
-https://${proxyhost}${hostName}/${uuid}?sb
-https://${proxyhost}${hostName}/${uuid}?singbox
+https://${proxyhost}${hostName}/${idid}?sb
+https://${proxyhost}${hostName}/${idid}?singbox
 ---------------------------------------------------------------
 ################################################################
 ${FileName} 配置信息
 ---------------------------------------------------------------
 ${动态UUID}HOST: ${hostName}
-UUID: ${userID}
+idid: ${userID}
 FKID: ${fakeUserID}
 UA: ${UA}
 ${订阅器}
@@ -1368,7 +1368,7 @@ ${atob('dGVsZWdyYW0g5Lqk5rWB576kIOaKgOacr+Wkp+S9rH7lnKjnur/lj5HniYwhCmh0dHBzOi8v
 			fakeHostName = `${fakeHostName}.xyz`
 		}
 		console.log(`虚假HOST: ${fakeHostName}`);
-		let url = `${subProtocol}://${sub}/sub?host=${fakeHostName}&uuid=${fakeUserID + atob('JmVkZ2V0dW5uZWw9Y21saXUmcHJveHlpcD0=') + RproxyIP}`;
+		let url = `${subProtocol}://${sub}/sub?host=${fakeHostName}&idid=${fakeUserID + atob('JmVkZ2V0dW5uZWw9Y21saXUmcHJveHlpcD0=') + RproxyIP}`;
 		let isBase64 = true;
 
 		if (!sub || sub == ""){
@@ -1467,9 +1467,9 @@ async function 整理优选列表(api) {
 				// 获取响应的内容
 				const content = await response.value;
 
-				// 验证当前apiUrl是否带有'proxyip=true'
-				if (api[index].includes('proxyip=true')) {
-					// 如果URL带有'proxyip=true'，则将内容添加到proxyIPPool
+				// 验证当前apiUrl是否带有'fandaiIP=true'
+				if (api[index].includes('fandaiIP=true')) {
+					// 如果URL带有'fandaiIP=true'，则将内容添加到proxyIPPool
 					proxyIPPool = proxyIPPool.concat((await 整理(content)).map(item => {
 						const baseItem = item.split('#')[0] || item;
 						if (baseItem.includes(':')) {
@@ -1549,8 +1549,8 @@ async function 整理测速结果(tls) {
 			
 					const formattedAddress = `${ipAddress}:${port}#${dataCenter}`;
 					newAddressescsv.push(formattedAddress);
-					if (csvUrl.includes('proxyip=true') && columns[tlsIndex].toUpperCase() == 'true' && !httpsPorts.includes(port)) {
-						// 如果URL带有'proxyip=true'，则将内容添加到proxyIPPool
+					if (csvUrl.includes('fandaiIP=true') && columns[tlsIndex].toUpperCase() == 'true' && !httpsPorts.includes(port)) {
+						// 如果URL带有'fandaiIP=true'，则将内容添加到proxyIPPool
 						proxyIPPool.push(`${ipAddress}:${port}`);
 					}
 				}
@@ -1564,7 +1564,7 @@ async function 整理测速结果(tls) {
 	return newAddressescsv;
 }
 
-function 生成本地订阅(host,UUID,noTLS,newAddressesapi,newAddressescsv,newAddressesnotlsapi,newAddressesnotlscsv) {
+function 生成本地订阅(host,idid,noTLS,newAddressesapi,newAddressescsv,newAddressesnotlsapi,newAddressesnotlscsv) {
 	const regex = /^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}|\[.*\]):?(\d+)?#?(.*)?$/;
 	addresses = addresses.concat(newAddressesapi);
 	addresses = addresses.concat(newAddressescsv);
@@ -1621,7 +1621,7 @@ function 生成本地订阅(host,UUID,noTLS,newAddressesapi,newAddressescsv,newA
 			let 节点备注 = '';
 			const 协议类型 = atob(啥啥啥_写的这是啥啊);
 			
-			const 维列斯Link = `${协议类型}://${UUID}@${address}:${port + atob('P2VuY3J5cHRpb249bm9uZSZzZWN1cml0eT0mdHlwZT13cyZob3N0PQ==') + 伪装域名}&path=${encodeURIComponent(最终路径)}#${encodeURIComponent(addressid + 节点备注)}`;
+			const 维列斯Link = `${协议类型}://${idid}@${address}:${port + atob('P2VuY3J5cHRpb249bm9uZSZzZWN1cml0eT0mdHlwZT13cyZob3N0PQ==') + 伪装域名}&path=${encodeURIComponent(最终路径)}#${encodeURIComponent(addressid + 节点备注)}`;
 	
 			return 维列斯Link;
 
@@ -1676,8 +1676,8 @@ function 生成本地订阅(host,UUID,noTLS,newAddressesapi,newAddressescsv,newA
 		let 伪装域名 = host ;
 		let 最终路径 = '/?ed=2560' ;
 		let 节点备注 = '';
-		const matchingProxyIP = proxyIPPool.find(proxyIP => proxyIP.includes(address));
-		if (matchingProxyIP) 最终路径 += `&proxyip=${matchingProxyIP}`;
+		const matchingProxyIP = proxyIPPool.find(fandaiIP => fandaiIP.includes(address));
+		if (matchingProxyIP) 最终路径 += `&fandaiIP=${matchingProxyIP}`;
 		
 		if(proxyhosts.length > 0 && (伪装域名.includes('.workers.dev'))) {
 			最终路径 = `/${伪装域名}${最终路径}`;
@@ -1686,7 +1686,7 @@ function 生成本地订阅(host,UUID,noTLS,newAddressesapi,newAddressescsv,newA
 		}
 		
 		const 协议类型 = atob(啥啥啥_写的这是啥啊);
-		const 维列斯Link = `${协议类型}://${UUID}@${address}:${port + atob('P2VuY3J5cHRpb249bm9uZSZzZWN1cml0eT10bHMmc25pPQ==') + 伪装域名}&fp=random&type=ws&host=${伪装域名}&path=${encodeURIComponent(最终路径)}#${encodeURIComponent(addressid + 节点备注)}`;
+		const 维列斯Link = `${协议类型}://${idid}@${address}:${port + atob('P2VuY3J5cHRpb249bm9uZSZzZWN1cml0eT10bHMmc25pPQ==') + 伪装域名}&fp=random&type=ws&host=${伪装域名}&path=${encodeURIComponent(最终路径)}#${encodeURIComponent(addressid + 节点备注)}`;
 			
 		return 维列斯Link;
 	}).join('\n');
@@ -1767,7 +1767,7 @@ function 生成动态UUID(密钥) {
 	const 当前周数 = 获取当前周数(); // 获取当前周数
 	const 结束时间 = new Date(起始日期.getTime() + 当前周数 * 一周的毫秒数);
 
-	// 生成两个 UUID
+	// 生成两个 idid
 	const 当前UUIDPromise = 生成UUID(密钥 + 当前周数);
 	const 上一个UUIDPromise = 生成UUID(密钥 + (当前周数 - 1));
 
